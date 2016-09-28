@@ -7,7 +7,7 @@ window.onload =function(){
     var btn = document.getElementById('btn');
     var timer1;
     var timer2;
-    init();
+    init();//启动
     btn.onclick = function(){
         if( timer2){
             clearInterval(timer2)
@@ -26,6 +26,8 @@ window.onload =function(){
         timer2 = setInterval(function(){
                 num = num;
                 console.log(num)
+                //
+                //异步获取数据
                 submit(num).then(function(data){
                      // stockData.push(data);
                      
