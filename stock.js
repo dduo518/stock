@@ -1,8 +1,8 @@
 
 
 window.onload =function(){
-    var stockData={};//一个股票一天的数据
-    localStorage.data = stockData;
+ 
+    var stockdata ={};//一个股票一天的数据
 
     var btn = document.getElementById('btn');
     var timer1;
@@ -10,8 +10,7 @@ window.onload =function(){
     init();//启动
     btn.onclick = function(){
         if( timer2){
-            clearInterval(timer2)
-            console.log('aaa')
+            clearInterval(timer2);
         }
         //获取数据
         var time = new Date();
@@ -21,22 +20,25 @@ window.onload =function(){
         var currentData ;
         //前面一条数据
         var prevData;
+
         var num = document.getElementById('stockNumber').value;
         if(num && (!isNaN(num))){
-        timer2 = setInterval(function(){
-                num = num;
-                console.log(num)
-                //
+             num =  _klass(num);
+             console.log(num)
+            var strName =  String('stockData_')+String(num);
+            stockdata[strName]={};
+
+            timer2 = setInterval(function(){
+               
                 //异步获取数据
                 submit(num).then(function(data){
-                     // stockData.push(data);
-                     
-                     stockData[time] = data;
-
+                     stockdata[strName][time] = data;
+                     //将数据存储到本地
+                     console.log(stockdata[strName])
+                     chrome.storage.sync.set({stockdata});
                      //将时间重新定位
                      time = new Date();
-                     console.log('======即时数据')
-                     console.log(data)
+                     
                 })
                 },3000) 
        }
@@ -46,10 +48,12 @@ window.onload =function(){
             clearInterval(timer1)
             clearInterval(timer2)
             console.log('stockDat---------a')
-            console.log(stockData)
+            //test 获取数据
+            chrome.storage.local.get(stockdata, function(result){
+                console.log(result);
+            });
             console.log('stockDat---------a')
        }
-
 
        //异步执行数据
        var x_rateTotal=0,y_rateTotal=0;
@@ -110,9 +114,10 @@ window.onload =function(){
            timer1 = setInterval(function(){
             //获取前3s数据
              console.log(' 获取俩条不同数据')
+             console.log(stockdata[strName])
              prevTime = new Date(new Date(timeDelay)-3000)
-             prevData = stockData[prevTime];
-             currentData = stockData[timeDelay];
+             prevData = stockdata[strName][prevTime];
+             currentData = stockdata[strName][timeDelay];
              timeDelay = time;
              if(currentData){
                  var rate = _dealData(currentData);
@@ -148,6 +153,18 @@ window.onload =function(){
        },3000)
     }
 
+
+
+    //test 存储数据API
+    // chrome.storage.local.set({stockData:{'key':'abcdsds7678678dsdddave'}});
+      chrome.storage.sync.get(stockdata, function(result){
+                console.log(result);
+            });
+    // chrome.storage.sync.remove('stockData', function(result){
+    //           console.log(result);
+    //       });
+    
+
     
     // 设定画布大小
     var cfg = {
@@ -158,7 +175,6 @@ window.onload =function(){
     //创建画布
     var body = document.getElementById('weather');
     body.appendChild(createCanvas(cfg))
-
 
     //画点连线
     function lineCtx(x,y,cfg){
@@ -180,11 +196,9 @@ window.onload =function(){
     }
 
     function submit(num){
-        var stockNum =  _klass(num);
         var promise = new Promise(function(resolve,reject){
-            if(stockNum){  
-                city =stockNum;
-                var url = 'http://hq.sinajs.cn/list='+city;
+            if(num){  
+                var url = 'http://hq.sinajs.cn/list='+num;
                  _httpRequest( url, _showWeather ).then(function(data){
                     resolve(data);
                  });
