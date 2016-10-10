@@ -157,9 +157,9 @@ window.onload =function(){
 
     //test 存储数据API
     // chrome.storage.local.set({stockData:{'key':'abcdsds7678678dsdddave'}});
-      chrome.storage.sync.get(stockdata, function(result){
-                console.log(result);
-            });
+    // chrome.storage.sync.get(stockdata, function(result){
+    //           console.log(result);
+    //       });
     // chrome.storage.sync.remove('stockData', function(result){
     //           console.log(result);
     //       });
@@ -168,14 +168,59 @@ window.onload =function(){
     
     // 设定画布大小
     var cfg = {
-        width:30000,
-        height:1000,
+        width:1200,
+        height:800,
         'color':'#CCC'
     }
     //创建画布
     var body = document.getElementById('weather');
-    body.appendChild(createCanvas(cfg))
+    var canvas = _createCanvas(cfg);
+         body.appendChild(canvas)
 
+    //  启动echarts 图表
+    var myChart = echarts.init(canvas);
+    var option = {
+            title: {
+                text: 'ECharts'
+            },
+            tooltip: {},
+            legend: {
+                data:['销量']
+            },
+            xAxis: {
+                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+            },
+            yAxis: {},
+            series: [{
+                name: '销量',
+                type: 'bar',
+                data: [5, 20, 36, 10, 10, 20]
+            }]
+        };
+    myChart.setOption(option);
+
+
+
+
+
+
+
+
+
+
+    function submit(num){
+        var promise = new Promise(function(resolve,reject){
+            if(num){  
+                var url = 'http://hq.sinajs.cn/list='+num;
+                 _httpRequest( url, _showWeather ).then(function(data){
+                    resolve(data);
+                 });
+                     
+            } 
+        });
+        return promise;
+    }
+    
     //画点连线
     function lineCtx(x,y,cfg){
         //默认设置
@@ -195,21 +240,9 @@ window.onload =function(){
         return defaultCfg;
     }
 
-    function submit(num){
-        var promise = new Promise(function(resolve,reject){
-            if(num){  
-                var url = 'http://hq.sinajs.cn/list='+num;
-                 _httpRequest( url, _showWeather ).then(function(data){
-                    resolve(data);
-                 });
-                     
-            } 
-        });
-        return promise;
-    }
 
     // 构建基本的画布
-    function createCanvas(cfg){
+     function _createCanvas(cfg){
         //默认宽高
         var defaultCfg = {
                 width:1000,
@@ -221,6 +254,12 @@ window.onload =function(){
         var canvas = document.createElement('canvas');
             canvas.width = w =defaultCfg.width;
             canvas.height = h =defaultCfg.height;
+        return canvas
+    }
+
+    function getContext(cfg){
+        //默认宽高
+        var canvas = _createCanvas(cfg);
         var ctx = canvas.getContext('2d');
 
         //绘制网格线
