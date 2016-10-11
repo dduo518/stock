@@ -1,7 +1,8 @@
 
 
 window.onload =function(){
- 
+      
+
     var stockdata ={};//一个股票一天的数据
 
     var btn = document.getElementById('btn');
@@ -179,25 +180,141 @@ window.onload =function(){
 
     //  启动echarts 图表
     var myChart = echarts.init(canvas);
-    var option = {
-            title: {
-                text: 'ECharts'
+
+    function randomData() {
+        now = new Date(+now + oneDay);
+        value = value + Math.random() * 21 - 10;
+        return {
+            name: now.toString(),
+            value: [
+                [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'),
+                Math.round(value)
+            ]
+        }
+    }
+
+    var data = [];
+    var now = +new Date(1997, 9, 3);
+    var oneDay = 24 * 3600 * 1000;
+    var value = Math.random() * 1000;
+    for (var i = 0; i < 1000; i++) {
+        data.push(randomData());
+    }
+    console.log(data)
+
+    option = {
+        title: {
+            text: '动态数据'
+        },
+        tooltip: {
+            trigger: 'axis',
+            formatter: function (params) {
+                params = params[0];
+                var date = new Date(params.name);
+                return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
             },
-            tooltip: {},
-            legend: {
-                data:['销量']
+            axisPointer: {
+                animation: false
+            }
+        },
+        xAxis: {
+            type: 'time',
+            splitLine: {
+                show: false
+            }
+        },
+        yAxis: {
+            type: 'value',
+            boundaryGap: [0, '100%'],
+            splitLine: {
+                show: false
+            }
+        },
+        dataZoom: [
+               {
+                type: 'slider',
+                xAxisIndex: 0,
+                start: 10,
+                end: 60
             },
-            xAxis: {
-                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+            {
+                type: 'inside',
+                xAxisIndex: 0,
+                start: 10,
+                end: 60
             },
-            yAxis: {},
-            series: [{
-                name: '销量',
-                type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
-            }]
-        };
-    myChart.setOption(option);
+            {
+                type: 'slider',
+                yAxisIndex: 0,
+                start: 30,
+                end: 80
+            },
+            {
+                type: 'inside',
+                yAxisIndex: 0,
+                start: 30,
+                end: 80
+            }
+        ],
+        series: [{
+            name: '模拟数据',
+            type: 'line',
+            showSymbol: false,
+            hoverAnimation: false,
+            data: data
+        }]
+    };
+     function test() {
+        submit('sz000534').then(function(data){
+            console.log(data)
+        })
+
+        for (var i = 0; i < 5; i++) {
+            data.shift();
+            data.push(randomData());
+           
+        }
+
+        myChart.setOption(option);
+    }
+    test()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
