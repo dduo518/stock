@@ -280,51 +280,6 @@ window.onload =function(){
     test()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     function submit(num){
         var promise = new Promise(function(resolve,reject){
             if(num){  
